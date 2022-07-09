@@ -1,24 +1,32 @@
 package com.ainoe.audio.api;
 
-import com.ainoe.audio.constvalue.ApiParamType;
+import com.ainoe.audio.config.Config;
+import com.ainoe.audio.constvalue.AudioFormat;
 import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.annotation.Input;
-import com.ainoe.audio.restful.annotation.Output;
 import com.ainoe.audio.restful.annotation.Param;
-import com.ainoe.audio.restful.core.privateapi.PrivateApiComponentBase;
+import com.ainoe.audio.restful.core.privateapi.PrivateBinaryStreamApiComponentBase;
 import com.alibaba.fastjson.JSONObject;
-import org.bytedeco.ffmpeg.global.avcodec;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bytedeco.javacv.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 @Component
-public class AudioConvertTestApi extends PrivateApiComponentBase {
+public class AudioConvertApi extends PrivateBinaryStreamApiComponentBase {
 
-    static Logger logger = LoggerFactory.getLogger(AudioConvertTestApi.class);
+    static Logger logger = LoggerFactory.getLogger(AudioConvertApi.class);
 
     @Override
     public String getToken() {
@@ -27,54 +35,59 @@ public class AudioConvertTestApi extends PrivateApiComponentBase {
 
     @Override
     public String getName() {
-        return "test";
+        return "音频格式转换";
     }
 
-    @Input({
-            @Param(name = "src", type = ApiParamType.STRING, desc = "音频文件路径", isRequired = true),
-            @Param(name = "audioCodec", type = ApiParamType.INTEGER, desc = "音频编码", isRequired = true),
-            @Param(name = "sampleRate", type = ApiParamType.INTEGER, desc = "音频采样率", isRequired = true),
-            @Param(name = "audioBitrate", type = ApiParamType.INTEGER, desc = "音频比特率", isRequired = true)
-    })
-    @Output({})
-    @Description(desc = "test")
+    @Input({@Param(name = "format", desc = "格式")})
+    @Description(desc = "音频格式转换")
     @Override
-    public Object myDoService(JSONObject jsonObj) throws IOException {
-        String src = jsonObj.getString("src");
-        Integer audioCodec = jsonObj.getInteger("audioCodec");
-        Integer sampleRate = jsonObj.getInteger("sampleRate");
-        Integer audioBitrate = jsonObj.getInteger("audioBitrate");
-        convert(src, "C:\\Users\\Aieano\\Desktop\\test.flac", avcodec.AV_CODEC_ID_FLAC, 8000, 16, 1);
+    public Object myDoService(JSONObject jsonObj, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String format = jsonObj.getString("format");
+        if (StringUtils.isBlank(format)) {
+            format = AudioFormat.FLAC.getName();
+        }
+        AudioFormat audioFormat = AudioFormat.getAudioFormat(format);
+        if (audioFormat == null) {
+            audioFormat = AudioFormat.FLAC;
+        }
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+        if (MapUtils.isNotEmpty(fileMap)) {
+            // todo 支持多个文件
+            MultipartFile multipartFile = fileMap.entrySet().stream().findFirst().get().getValue();
+            InputStream inputStream = multipartFile.getInputStream();
+            String filename = multipartFile.getOriginalFilename();
+            convert(inputStream, Config.AUDIO_HOME() + File.separator + filename.substring(0, filename.lastIndexOf(".") + 1) + audioFormat.getName(), audioFormat);
+        }
+
         return null;
     }
 
-    public void convert(String inputFile, String outputFile, int audioCodec, int sampleRate, int audioBitrate,
-                        int audioChannels) {
+    public void convert(InputStream inputStream, String outputStream, AudioFormat format) throws IOException {
         Frame audioSamples = null;
         // 音频录制（输出地址，音频通道）
         FFmpegFrameRecorder recorder = null;
         //抓取器
-        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(inputFile);
+        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(inputStream);
 
         // 开启抓取器
         if (start(grabber)) {
-            recorder = new FFmpegFrameRecorder(outputFile, grabber.getAudioChannels());
+            recorder = new FFmpegFrameRecorder(outputStream, grabber.getAudioChannels());
             recorder.setAudioOption("crf", "0");
-            recorder.setAudioCodec(audioCodec);
+            recorder.setAudioCodec(format.getAudioCodec());
             recorder.setAudioBitrate(grabber.getAudioBitrate());
             recorder.setAudioChannels(grabber.getAudioChannels());
             recorder.setSampleRate(grabber.getSampleRate());
             recorder.setAudioQuality(0);
-            recorder.setAudioOption("aq", "10");
+            recorder.setFormat(format.getName());
             // 开启录制器
             if (start(recorder)) {
                 try {
                     // 抓取音频
-                    while ((audioSamples = grabber.grab()) != null) {
+                    while ((audioSamples = grabber.grabSamples()) != null) {
                         recorder.setTimestamp(grabber.getTimestamp());
                         recorder.record(audioSamples);
                     }
-
                 } catch (org.bytedeco.javacv.FrameGrabber.Exception e1) {
                     System.err.println("抓取失败");
                 } catch (Exception e) {
@@ -150,7 +163,7 @@ public class AudioConvertTestApi extends PrivateApiComponentBase {
     public boolean stop(FrameRecorder recorder) {
         try {
             recorder.stop();
-            recorder.release();
+//            recorder.release();
             return true;
         } catch (Exception e) {
             return false;

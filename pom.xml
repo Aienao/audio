@@ -60,17 +60,6 @@
             <artifactId>spring-context-support</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-spring-context</artifactId>
-            <version>1.0.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
         </dependency>
