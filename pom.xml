@@ -26,6 +26,18 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <repositories>
+        <repository>
+            <id>aliyunmaven</id>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -132,6 +144,32 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.bytedeco/javacv -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv</artifactId>
+            <version>1.5.7</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.bytedeco/ffmpeg -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>ffmpeg</artifactId>
+            <version>5.0-1.5.7</version>
+            <!--上linux需替换-->
+            <classifier>windows-x86_64</classifier>
+        </dependency>
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.bytedeco/javacpp &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.bytedeco</groupId>-->
+<!--            <artifactId>javacpp</artifactId>-->
+<!--            <version>1.5.7</version>-->
+<!--        </dependency>-->
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.bytedeco/javacv-platform &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.bytedeco</groupId>-->
+<!--            <artifactId>javacv-platform</artifactId>-->
+<!--            <version>1.5.7</version>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>
