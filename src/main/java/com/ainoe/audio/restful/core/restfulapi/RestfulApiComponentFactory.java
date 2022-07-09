@@ -1,6 +1,7 @@
 package com.ainoe.audio.restful.core.restfulapi;
 
 
+import com.ainoe.audio.constvalue.ApiType;
 import com.ainoe.audio.dto.ApiHandlerVo;
 import com.ainoe.audio.dto.ApiVo;
 import com.ainoe.audio.restful.core.IApiComponent;
@@ -116,7 +117,7 @@ public class RestfulApiComponentFactory implements ApplicationListener<ContextRe
                 ApiHandlerVo restComponentVo = new ApiHandlerVo();
                 restComponentVo.setHandler(component.getClassName());
                 restComponentVo.setName(component.getName());
-                restComponentVo.setType(ApiVo.Type.OBJECT.getValue());
+                restComponentVo.setType(ApiType.OBJECT.getValue());
                 apiHandlerList.add(restComponentVo);
                 apiHandlerMap.put(component.getClassName(), restComponentVo);
                 String token = component.getToken();
@@ -132,7 +133,7 @@ public class RestfulApiComponentFactory implements ApplicationListener<ContextRe
                     apiVo.setHandler(component.getClassName());
                     apiVo.setHandlerName(component.getName());
                     apiVo.setName(component.getName());
-                    apiVo.setType(ApiVo.Type.OBJECT.getValue());
+                    apiVo.setType(ApiType.OBJECT.getValue());
                     if (token.contains("{")) {
                         Matcher m = p.matcher(token);
                         StringBuffer temp = new StringBuffer();
@@ -169,7 +170,7 @@ public class RestfulApiComponentFactory implements ApplicationListener<ContextRe
                 ApiHandlerVo restComponentVo = new ApiHandlerVo();
                 restComponentVo.setHandler(component.getId());
                 restComponentVo.setName(component.getName());
-                restComponentVo.setType(ApiVo.Type.BINARY.getValue());
+                restComponentVo.setType(ApiType.BINARY.getValue());
                 apiHandlerList.add(restComponentVo);
                 apiHandlerMap.put(component.getId(), restComponentVo);
                 String token = component.getToken();
@@ -185,7 +186,7 @@ public class RestfulApiComponentFactory implements ApplicationListener<ContextRe
                     apiVo.setHandler(component.getId());
                     apiVo.setHandlerName(component.getName());
                     apiVo.setName(component.getName());
-                    apiVo.setType(ApiVo.Type.BINARY.getValue());
+                    apiVo.setType(ApiType.BINARY.getValue());
 
                     if (token.contains("{")) {
                         Matcher m = p.matcher(token);

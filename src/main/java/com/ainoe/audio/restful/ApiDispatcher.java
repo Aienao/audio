@@ -1,6 +1,7 @@
-package com.ainoe.audio.web;
+package com.ainoe.audio.restful;
 
 
+import com.ainoe.audio.constvalue.ApiType;
 import com.ainoe.audio.dto.ApiHandlerVo;
 import com.ainoe.audio.dto.ApiVo;
 import com.ainoe.audio.exception.ApiNotFoundException;
@@ -38,7 +39,7 @@ public class ApiDispatcher {
     Logger logger = LoggerFactory.getLogger(ApiDispatcher.class);
     private static final String RESPONSE_TYPE_JSON = "application/json;charset=UTF-8";
 
-    private JSON doIt(HttpServletRequest request, HttpServletResponse response, String token, ApiVo.Type apiType, JSONObject paramObj) throws Exception {
+    private JSON doIt(HttpServletRequest request, HttpServletResponse response, String token, ApiType apiType, JSONObject paramObj) throws Exception {
         ApiVo interfaceVo = RestfulApiComponentFactory.getApiByToken(token);
 
         if (interfaceVo == null) {
@@ -53,7 +54,7 @@ public class ApiDispatcher {
             throw new ComponentNotFoundException("接口组件:" + interfaceVo.getHandler() + "不存在");
         }
 
-        if (apiType.equals(ApiVo.Type.OBJECT)) {
+        if (apiType.equals(ApiType.OBJECT)) {
             IApiComponent restComponent = RestfulApiComponentFactory.getInstance(interfaceVo.getHandler());
             if (restComponent != null) {
                 Long startTime = System.currentTimeMillis();
@@ -62,7 +63,7 @@ public class ApiDispatcher {
             } else {
                 throw new ComponentNotFoundException("接口组件:" + interfaceVo.getHandler() + "不存在");
             }
-        } else if (apiType.equals(ApiVo.Type.BINARY)) {
+        } else if (apiType.equals(ApiType.BINARY)) {
             IBinaryStreamApiComponent restComponent = RestfulApiComponentFactory.getBinaryInstance(interfaceVo.getHandler());
             if (restComponent != null) {
                 Long starTime = System.currentTimeMillis();
@@ -138,7 +139,7 @@ public class ApiDispatcher {
         String token = getToken(request);
         JSON returnObj;
         try {
-            returnObj = doIt(request, response, token, ApiVo.Type.OBJECT, paramObj != null ? paramObj : new JSONObject());
+            returnObj = doIt(request, response, token, ApiType.OBJECT, paramObj != null ? paramObj : new JSONObject());
         } catch (ApiRuntimeException ex) {
             response.setStatus(520);
             JSONObject rObj = new JSONObject();
@@ -164,7 +165,7 @@ public class ApiDispatcher {
         JSONObject paramObj = getParameters(request);
         JSON returnObj;
         try {
-            returnObj = doIt(request, response, token, ApiVo.Type.BINARY, paramObj);
+            returnObj = doIt(request, response, token, ApiType.BINARY, paramObj);
         } catch (ApiRuntimeException ex) {
             response.setStatus(520);
             JSONObject rObj = new JSONObject();

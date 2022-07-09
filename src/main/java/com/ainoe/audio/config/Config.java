@@ -15,7 +15,7 @@ import java.util.Properties;
 public class Config {
     private static final Logger logger = LoggerFactory.getLogger(Config.class);
     private static final String CONFIG_FILE = "application.properties";
-    private static String AUDIO_HOME; //文件根目录
+    private static String AUDIO_HOME; // 音频文件根目录
 
     public static String AUDIO_HOME() {
         return AUDIO_HOME;
