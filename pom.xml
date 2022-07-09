@@ -155,21 +155,14 @@
             <groupId>org.bytedeco</groupId>
             <artifactId>ffmpeg</artifactId>
             <version>5.0-1.5.7</version>
-            <!--上linux需替换-->
             <classifier>windows-x86_64</classifier>
         </dependency>
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.bytedeco/javacpp &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.bytedeco</groupId>-->
-<!--            <artifactId>javacpp</artifactId>-->
-<!--            <version>1.5.7</version>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.bytedeco/javacv-platform &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.bytedeco</groupId>-->
-<!--            <artifactId>javacv-platform</artifactId>-->
-<!--            <version>1.5.7</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>ffmpeg</artifactId>
+            <version>5.0-1.5.7</version>
+            <classifier>linux-x86_64</classifier>
+        </dependency>
     </dependencies>
 
     <build>
