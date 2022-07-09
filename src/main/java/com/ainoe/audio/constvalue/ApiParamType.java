@@ -8,11 +8,9 @@ public enum ApiParamType {
     LONG("long", "长整型"),
     JSONOBJECT("jsonObject", "json对象"),
     JSONARRAY("jsonArray", "json数组"),
-    IP("ip", "ip"),
-    EMAIL("email", "邮箱"),
     REGEX("regex", "正则表达式"),
     DOUBLE("double", "双精度浮点数"),
-    NOAUTH("noAuth", "无需校验");
+    ;
 
     private final String name;
     private final String text;

@@ -13,51 +13,6 @@ public class ApiVo implements Serializable {
 
     private static final long serialVersionUID = 3689437871016436622L;
 
-    public enum Type {
-        OBJECT("object", "对象模式", "rest/"), STREAM("stream", "json流模式", "stream/"), BINARY("binary", "字节流模式", "binary/");
-
-        private final String name;
-        private final String text;
-        private final String urlPre;
-
-        Type(String _name, String _text, String _urlPre) {
-            this.name = _name;
-            this.text = _text;
-            this.urlPre = _urlPre;
-        }
-
-        public String getValue() {
-            return name;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public String getUrlPre() {
-            return urlPre;
-        }
-
-        public static String getText(String name) {
-            for (Type s : Type.values()) {
-                if (s.getValue().equals(name)) {
-                    return s.getText();
-                }
-            }
-            return "";
-        }
-
-        public static String getUrlPre(String name) {
-            for (Type s : Type.values()) {
-                if (s.getValue().equals(name)) {
-                    return s.getUrlPre();
-                }
-            }
-            return "";
-        }
-    }
-
-
     @EntityField(name = "名称", type = ApiParamType.STRING)
     private String name;
     @EntityField(name = "处理器", type = ApiParamType.STRING)

@@ -16,7 +16,6 @@ public interface IApiComponent {
 
     String getName();
 
-
     Object doService(ApiVo apiVo, JSONObject jsonObj) throws Exception;
 
 }
