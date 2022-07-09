@@ -26,7 +26,7 @@ public class Config {
         try {
             Properties prop = new Properties();
             prop.load(new InputStreamReader(Objects.requireNonNull(Config.class.getClassLoader().getResourceAsStream(CONFIG_FILE)), StandardCharsets.UTF_8));
-            AUDIO_HOME = prop.getProperty("audio.home", "");
+            AUDIO_HOME = prop.getProperty("audio.home");
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }

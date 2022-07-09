@@ -4,7 +4,7 @@ import org.bytedeco.ffmpeg.global.avcodec;
 
 public enum AudioFormat {
     FLAC("flac", avcodec.AV_CODEC_ID_FLAC),
-    MP3("mp3", avcodec.AV_CODEC_ID_MP3ADU),
+    MP3("mp3", avcodec.AV_CODEC_ID_MP3),
     ;
     private final String name;
     private final Integer audioCodec;

@@ -2,6 +2,7 @@ package com.ainoe.audio.api;
 
 import com.ainoe.audio.config.Config;
 import com.ainoe.audio.constvalue.AudioFormat;
+import com.ainoe.audio.exception.core.ApiRuntimeException;
 import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.annotation.Input;
 import com.ainoe.audio.restful.annotation.Param;
@@ -42,6 +43,9 @@ public class AudioConvertApi extends PrivateBinaryStreamApiComponentBase {
     @Description(desc = "音频格式转换")
     @Override
     public Object myDoService(JSONObject jsonObj, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (StringUtils.isBlank(Config.AUDIO_HOME())) {
+            throw new ApiRuntimeException("请先配置audio.home");
+        }
         String format = jsonObj.getString("format");
         if (StringUtils.isBlank(format)) {
             format = AudioFormat.FLAC.getName();
