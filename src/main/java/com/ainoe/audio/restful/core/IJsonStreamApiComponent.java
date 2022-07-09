@@ -17,5 +17,4 @@ public interface IJsonStreamApiComponent {
 
     Object doService(ApiVo interfaceVo, JSONObject paramObj, JSONReader jsonReader) throws Exception;
 
-    JSONObject help();
 }

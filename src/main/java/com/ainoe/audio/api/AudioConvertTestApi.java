@@ -58,12 +58,12 @@ public class AudioConvertTestApi extends PrivateApiComponentBase {
 
         // 开启抓取器
         if (start(grabber)) {
-            recorder = new FFmpegFrameRecorder(outputFile, audioChannels);
+            recorder = new FFmpegFrameRecorder(outputFile, grabber.getAudioChannels());
             recorder.setAudioOption("crf", "0");
             recorder.setAudioCodec(audioCodec);
-            recorder.setAudioBitrate(audioBitrate);
-            recorder.setAudioChannels(audioChannels);
-            recorder.setSampleRate(sampleRate);
+            recorder.setAudioBitrate(grabber.getAudioBitrate());
+            recorder.setAudioChannels(grabber.getAudioChannels());
+            recorder.setSampleRate(grabber.getSampleRate());
             recorder.setAudioQuality(0);
             recorder.setAudioOption("aq", "10");
             // 开启录制器
@@ -80,8 +80,8 @@ public class AudioConvertTestApi extends PrivateApiComponentBase {
                 } catch (Exception e) {
                     System.err.println("录制失败");
                 }
-                stop(grabber);
                 stop(recorder);
+                stop(grabber);
             }
         }
 

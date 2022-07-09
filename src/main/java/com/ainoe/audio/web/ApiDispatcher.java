@@ -114,8 +114,6 @@ public class ApiDispatcher {
                             return (JSONArray) o;
                         }
                     }
-                } else {
-                    return restComponent.help();
                 }
             } else {
                 throw new ComponentNotFoundException("接口组件:" + interfaceVo.getHandler() + "不存在");
@@ -141,8 +139,6 @@ public class ApiDispatcher {
                             return (JSONArray) o;
                         }
                     }
-                } else {
-                    return restComponent.help();
                 }
             } else {
                 throw new ComponentNotFoundException("接口组件:" + interfaceVo.getHandler() + "不存在");
