@@ -14,7 +14,7 @@ public abstract class BinaryStreamApiComponentBase implements MyBinaryStreamApiC
 
     @Override
     public final Object doService(ApiVo apiVo, JSONObject paramObj, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Object result = null;
+        Object result;
         try {
             try {
                 Object proxy = AopContext.currentProxy();

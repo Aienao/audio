@@ -6,7 +6,7 @@ import com.ainoe.audio.exception.core.ApiRuntimeException;
 import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.annotation.Input;
 import com.ainoe.audio.restful.annotation.Param;
-import com.ainoe.audio.restful.core.privateapi.PrivateBinaryStreamApiComponentBase;
+import com.ainoe.audio.restful.core.restfulapi.RestfulBinaryStreamApiComponentBase;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,13 +25,13 @@ import java.io.InputStream;
 import java.util.Map;
 
 @Component
-public class AudioConvertApi extends PrivateBinaryStreamApiComponentBase {
+public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
 
     static Logger logger = LoggerFactory.getLogger(AudioConvertApi.class);
 
     @Override
     public String getToken() {
-        return "/audio/convert/test";
+        return "/audio/convert";
     }
 
     @Override
