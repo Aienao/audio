@@ -39,7 +39,7 @@ import java.util.Map;
 @RequestMapping("/api/")
 public class ApiDispatcher {
     /**
-     * 错误码定义（和codedriver一致）：
+     * 错误码定义
      * 520:已知接口错误，error.log不再打出堆栈信息，只会把错误信息返回给前端
      * 521:不明错误，会在error.log中打出
      * 522:用户认证问题
@@ -66,11 +66,6 @@ public class ApiDispatcher {
         ApiHandlerVo apiHandlerVo = PrivateApiComponentFactory.getApiHandlerByHandler(interfaceVo.getHandler());
         if (apiHandlerVo == null) {
             throw new ComponentNotFoundException("接口组件:" + interfaceVo.getHandler() + "不存在");
-        }
-
-        //param补充 tenant 租户信息
-        if(StringUtils.isNotBlank(request.getHeader("Tenant"))){
-            paramObj.put("tenant",request.getHeader("Tenant"));
         }
 
         if (apiType.equals(ApiVo.Type.OBJECT)) {
