@@ -1,6 +1,7 @@
 package com.ainoe.audio.api;
 
 import com.ainoe.audio.config.Config;
+import com.ainoe.audio.constvalue.ApiParamType;
 import com.ainoe.audio.constvalue.AudioFormat;
 import com.ainoe.audio.exception.ConfigLostException;
 import com.ainoe.audio.exception.FileNameSuffixLostException;
@@ -25,12 +26,21 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
 
     static Logger logger = LoggerFactory.getLogger(AudioConvertApi.class);
+
+    static Map<String, Integer> bitRateMap = new HashMap<>();
+
+    static {
+        bitRateMap.put("128Kbs", 128000);
+        bitRateMap.put("192Kbs", 192000);
+        bitRateMap.put("320Kbs", 320000);
+    }
 
     @Override
     public String getToken() {
@@ -42,7 +52,10 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
         return "音频格式转换";
     }
 
-    @Input({@Param(name = "format", desc = "格式")})
+    @Input({
+            @Param(name = "format", type = ApiParamType.ENUM, desc = "格式"),
+            @Param(name = "bitRate", type = ApiParamType.ENUM, desc = "比特率")
+    })
     @Description(desc = "音频格式转换")
     @Override
     public Object myDoService(JSONObject jsonObj, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -50,12 +63,21 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             throw new ConfigLostException("audio.home");
         }
         String format = jsonObj.getString("format");
+        String bitRateStr = jsonObj.getString("bitRate");
+        Integer bitRate = null;
         if (StringUtils.isBlank(format)) {
             format = AudioFormat.MP3.getValue();
         }
         AudioFormat audioFormat = AudioFormat.getAudioFormat(format);
         if (audioFormat == null) {
             audioFormat = AudioFormat.MP3;
+        }
+        if (AudioFormat.MP3.equals(audioFormat)) {
+            if (StringUtils.isNotBlank(bitRateStr)) {
+                bitRate = bitRateMap.get(bitRateStr);
+            } else {
+                bitRate = bitRateMap.get("320Kbs");
+            }
         }
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
@@ -80,13 +102,13 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
 //            } catch (Exception ex) {
 //                logger.error(ex.getMessage(), ex);
 //            }
-            convert(inputStream, Config.AUDIO_HOME() + File.separator + outputFileName, audioFormat);
+            convert(inputStream, Config.AUDIO_HOME() + File.separator + outputFileName, audioFormat, bitRate);
         }
 
         return null;
     }
 
-    public void convert(InputStream inputStream, String outputStream, AudioFormat format) throws Exception {
+    public void convert(InputStream inputStream, String outputStream, AudioFormat format, Integer bitRate) throws Exception {
         Frame audioSamples;
         FFmpegFrameRecorder recorder = null;
         //抓取器
@@ -97,7 +119,7 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             recorder = new FFmpegFrameRecorder(outputStream, grabber.getAudioChannels());
             if (AudioFormat.MP3.equals(format)) {
                 recorder.setAudioOption("crf", "0");
-                recorder.setAudioBitrate(320000);
+                recorder.setAudioBitrate(bitRate);
             }
             recorder.setAudioChannels(grabber.getAudioChannels());
             recorder.setSampleRate(grabber.getSampleRate());
@@ -122,7 +144,6 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             }
             grabber.stop();
         }
-
     }
 
     public void convert(InputStream inputStream, OutputStream outputStream, AudioFormat format) throws Exception {
