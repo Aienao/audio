@@ -4,7 +4,6 @@ import com.ainoe.audio.config.Config;
 import com.ainoe.audio.constvalue.ApiParamType;
 import com.ainoe.audio.constvalue.AudioFormat;
 import com.ainoe.audio.exception.FileNameSuffixLostException;
-import com.ainoe.audio.exception.UnknownAudioFormatException;
 import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.annotation.Input;
 import com.ainoe.audio.restful.annotation.Param;
@@ -79,11 +78,6 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             String filename = multipartFile.getOriginalFilename();
             if (!filename.contains(".")) {
                 throw new FileNameSuffixLostException(filename);
-            }
-            String suffix = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
-            AudioFormat sourceFormat = AudioFormat.getAudioFormat(suffix);
-            if (sourceFormat == null) {
-                throw new UnknownAudioFormatException(suffix);
             }
             logger.debug("converting {}.", filename);
             String outputFileName = filename.substring(0, filename.lastIndexOf(".") + 1) + audioFormat.getValue();
