@@ -44,6 +44,7 @@ public class AudioUtil {
         try {
             // 开始抓取音频
             grabber.start();
+            // 构造记录器并设置声道数为原始值
             recorder = new FFmpegFrameRecorder(outputPath, grabber.getAudioChannels());
             // 还原音频元数据
             recorder.setMetadata(grabber.getMetadata());
@@ -53,8 +54,6 @@ public class AudioUtil {
                 // 设置比特率（setAudioBitrate与setAudioQuality不可混用，否则设定的比特率不生效）
                 recorder.setAudioBitrate(bitRate);
             }
-            // 设置音频声道数
-            recorder.setAudioChannels(grabber.getAudioChannels());
             // 设置音频采样率
             recorder.setSampleRate(grabber.getSampleRate());
             // 设置音频格式（javacv将根据格式自动选择编码器）
@@ -70,9 +69,9 @@ public class AudioUtil {
             recorder.stop();
             grabber.flush();
             grabber.stop();
-        } catch (Exception e) {
-            logger.error("audio convert failed.{}", ExceptionUtils.getStackTrace(e));
-            throw e;
+        } catch (Exception ex) {
+            logger.error("audio convert failed.\n{}", ExceptionUtils.getStackTrace(ex));
+            throw ex;
         } finally {
             if (recorder != null) {
                 recorder.stop();
