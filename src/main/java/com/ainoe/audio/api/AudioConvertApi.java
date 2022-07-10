@@ -6,7 +6,7 @@ import com.ainoe.audio.exception.core.ApiRuntimeException;
 import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.annotation.Input;
 import com.ainoe.audio.restful.annotation.Param;
-import com.ainoe.audio.restful.core.restfulapi.RestfulBinaryStreamApiComponentBase;
+import com.ainoe.audio.restful.component.RestfulBinaryStreamApiComponentBase;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;

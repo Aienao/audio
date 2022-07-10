@@ -1,4 +1,4 @@
-package com.ainoe.audio.restful.core;
+package com.ainoe.audio.restful.base;
 
 import com.alibaba.fastjson.JSONObject;
 

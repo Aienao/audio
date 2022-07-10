@@ -7,9 +7,9 @@ import com.ainoe.audio.dto.ApiVo;
 import com.ainoe.audio.exception.ApiNotFoundException;
 import com.ainoe.audio.exception.ComponentNotFoundException;
 import com.ainoe.audio.exception.core.ApiRuntimeException;
-import com.ainoe.audio.restful.core.IApiComponent;
-import com.ainoe.audio.restful.core.IBinaryStreamApiComponent;
-import com.ainoe.audio.restful.core.restfulapi.RestfulApiComponentFactory;
+import com.ainoe.audio.restful.base.IApiComponent;
+import com.ainoe.audio.restful.base.IBinaryStreamApiComponent;
+import com.ainoe.audio.restful.component.RestfulApiComponentFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -79,22 +79,22 @@ public class ApiDispatcher {
     @RequestMapping(value = "/rest/**", method = RequestMethod.GET)
     public void dispatcherForGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         JSONObject paramObj = getParameters(request);
-        getRestApiResult(request, response, paramObj);
+        doRestRequest(request, response, paramObj);
     }
 
     @RequestMapping(value = "/rest/**", method = RequestMethod.POST, consumes = "application/json")
     public void dispatcherForPost(@RequestBody JSONObject json, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        getRestApiResult(request, response, json);
+        doRestRequest(request, response, json);
     }
 
     @RequestMapping(value = "/binary/**", method = RequestMethod.GET)
     public void dispatcherForPostBinary(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        getBinaryApiResult(request, response);
+        doBinaryRequest(request, response);
     }
 
     @RequestMapping(value = "/binary/**", method = RequestMethod.POST, consumes = "multipart/form-data")
     public void dispatcherForPostBinaryMultipart(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        getBinaryApiResult(request, response);
+        doBinaryRequest(request, response);
     }
 
     private String getToken(HttpServletRequest request) {
@@ -135,7 +135,7 @@ public class ApiDispatcher {
         }
     }
 
-    private void getRestApiResult(HttpServletRequest request, HttpServletResponse response, JSONObject paramObj) throws IOException {
+    private void doRestRequest(HttpServletRequest request, HttpServletResponse response, JSONObject paramObj) throws IOException {
         String token = getToken(request);
         JSON returnObj;
         try {
@@ -160,7 +160,7 @@ public class ApiDispatcher {
         }
     }
 
-    private void getBinaryApiResult(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void doBinaryRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String token = getToken(request);
         JSONObject paramObj = getParameters(request);
         JSON returnObj;

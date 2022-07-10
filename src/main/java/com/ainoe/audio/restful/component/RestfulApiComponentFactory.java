@@ -1,11 +1,11 @@
-package com.ainoe.audio.restful.core.restfulapi;
+package com.ainoe.audio.restful.component;
 
 
 import com.ainoe.audio.constvalue.ApiType;
 import com.ainoe.audio.dto.ApiHandlerVo;
 import com.ainoe.audio.dto.ApiVo;
-import com.ainoe.audio.restful.core.IApiComponent;
-import com.ainoe.audio.restful.core.IBinaryStreamApiComponent;
+import com.ainoe.audio.restful.base.IApiComponent;
+import com.ainoe.audio.restful.base.IBinaryStreamApiComponent;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
