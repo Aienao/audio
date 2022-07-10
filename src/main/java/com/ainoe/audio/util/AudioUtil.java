@@ -79,4 +79,16 @@ public class AudioUtil {
             grabber.stop();
         }
     }
+
+    /**
+     * 格式化时长为字符串，精确到分:秒，格式为00:00
+     *
+     * @param duration 时长
+     * @return
+     */
+    public static String getDuration(long duration) {
+        long min = duration / (1000L * 1000 * 60);
+        long sec = duration % (1000L * 1000 * 60) / 1000000;
+        return (min < 10 ? "0" + min : min) + ":" + (sec < 10 ? "0" + sec : sec);
+    }
 }

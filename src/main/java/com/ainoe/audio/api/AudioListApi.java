@@ -5,6 +5,7 @@ import com.ainoe.audio.dto.AudioVo;
 import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.component.RestfulApiComponentBase;
 import com.ainoe.audio.service.ConfigService;
+import com.ainoe.audio.util.AudioUtil;
 import com.alibaba.fastjson.JSONObject;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.slf4j.Logger;
@@ -58,6 +59,7 @@ public class AudioListApi extends RestfulApiComponentBase {
                                 , grabber.getSampleRate()
                                 , grabber.getAudioBitrate()
                                 , grabber.getAudioChannels()
+                                , AudioUtil.getDuration(grabber.getLengthInTime())
                                 , metadata.get("date")
                                 , metadata.get("artist")
                                 , metadata.get("album")
