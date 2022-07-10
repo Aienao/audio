@@ -14,19 +14,19 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.bytedeco.javacv.*;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.FFmpegFrameRecorder;
+import org.bytedeco.javacv.Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,13 +96,6 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
                 throw new UnknownAudioFormatException(suffix);
             }
             String outputFileName = filename.substring(0, filename.lastIndexOf(".") + 1) + audioFormat.getValue();
-//            response.setHeader("Content-Disposition", " attachment; filename=\"" + outputFileName + "\"");
-//            response.setContentType("application/octet-stream");
-//            try (ServletOutputStream outputStream = response.getOutputStream()) {
-//                convert(inputStream, outputStream, audioFormat, bitRate);
-//            } catch (Exception ex) {
-//                logger.error(ex.getMessage(), ex);
-//            }
             convert(inputStream, Config.AUDIO_HOME() + File.separator + outputFileName, audioFormat, bitRate);
         }
 
@@ -110,43 +103,6 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
     }
 
     public void convert(InputStream inputStream, String outputStream, AudioFormat format, Integer bitRate) throws Exception {
-        Frame audioSamples;
-        FFmpegFrameRecorder recorder = null;
-        //抓取器
-        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(inputStream);
-        try {
-            // 开启抓取器
-            grabber.start();
-            recorder = new FFmpegFrameRecorder(outputStream, grabber.getAudioChannels());
-            if (AudioFormat.MP3.equals(format)) {
-//                recorder.setAudioOption("crf", "0");
-                recorder.setAudioBitrate(bitRate);
-            }
-            recorder.setAudioChannels(grabber.getAudioChannels());
-            recorder.setSampleRate(grabber.getSampleRate());
-            recorder.setFormat(format.getValue());
-            // 开启录制器
-            recorder.start();
-            // 抓取音频
-            while ((audioSamples = grabber.grabSamples()) != null) {
-                recorder.setTimestamp(grabber.getTimestamp());
-                recorder.record(audioSamples);
-            }
-            recorder.stop();
-            grabber.flush();
-            grabber.stop();
-        } catch (Exception e) {
-            logger.error("audio convert failed.{}", ExceptionUtils.getStackTrace(e));
-            throw e;
-        } finally {
-            if (recorder != null) {
-                recorder.stop();
-            }
-            grabber.stop();
-        }
-    }
-
-    public void convert(InputStream inputStream, OutputStream outputStream, AudioFormat format, Integer bitRate) throws Exception {
         Frame audioSamples;
         FFmpegFrameRecorder recorder = null;
         //抓取器
