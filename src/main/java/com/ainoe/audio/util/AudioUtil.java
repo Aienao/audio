@@ -20,7 +20,6 @@ import java.util.Map;
 public class AudioUtil {
 
     static Logger logger = LoggerFactory.getLogger(AudioUtil.class);
-
     public static Map<String, Integer> bitRateMap = new HashMap<>(); // 音频比特率
 
     static {
@@ -81,7 +80,7 @@ public class AudioUtil {
     }
 
     /**
-     * 格式化时长为字符串，精确到分:秒，格式为00:00
+     * 格式化时长为{分:秒}字符串，精确到秒，格式为00:00
      *
      * @param duration 时长
      * @return
