@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 
 @Component
@@ -50,11 +51,11 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
         }
         String format = jsonObj.getString("format");
         if (StringUtils.isBlank(format)) {
-            format = AudioFormat.FLAC.getName();
+            format = AudioFormat.MP3.getValue();
         }
         AudioFormat audioFormat = AudioFormat.getAudioFormat(format);
         if (audioFormat == null) {
-            audioFormat = AudioFormat.FLAC;
+            audioFormat = AudioFormat.MP3;
         }
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
@@ -71,7 +72,15 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             if (sourceFormat == null) {
                 throw new UnknownAudioFormatException(suffix);
             }
-            convert(inputStream, Config.AUDIO_HOME() + File.separator + filename.substring(0, filename.lastIndexOf(".") + 1) + audioFormat.getName(), audioFormat);
+            String outputFileName = filename.substring(0, filename.lastIndexOf(".") + 1) + audioFormat.getValue();
+//            response.setHeader("Content-Disposition", " attachment; filename=\"" + outputFileName + "\"");
+//            response.setContentType("application/octet-stream");
+//            try (ServletOutputStream outputStream = response.getOutputStream()) {
+//                convert(inputStream, outputStream, audioFormat);
+//            } catch (Exception ex) {
+//                logger.error(ex.getMessage(), ex);
+//            }
+            convert(inputStream, Config.AUDIO_HOME() + File.separator + outputFileName, audioFormat);
         }
 
         return null;
@@ -86,13 +95,14 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             // 开启抓取器
             grabber.start();
             recorder = new FFmpegFrameRecorder(outputStream, grabber.getAudioChannels());
-//            recorder.setAudioOption("crf", "0");
-//            recorder.setAudioCodec(avcodec.AV_CODEC_ID_PCM_S16LE);
-//            recorder.setAudioBitrate(grabber.getAudioBitrate());
-//            recorder.setAudioChannels(grabber.getAudioChannels());
-//            recorder.setSampleRate(grabber.getSampleRate());
-            recorder.setAudioQuality(0);
-            recorder.setFormat(format.getName());
+            if (AudioFormat.MP3.equals(format)) {
+                recorder.setAudioOption("crf", "0");
+                recorder.setAudioBitrate(320000);
+            }
+            recorder.setAudioChannels(grabber.getAudioChannels());
+            recorder.setSampleRate(grabber.getSampleRate());
+            recorder.setFormat(format.getValue());
+            recorder.setAudioMetadata(grabber.getAudioMetadata());
             // 开启录制器
             recorder.start();
             // 抓取音频
@@ -113,6 +123,43 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             grabber.stop();
         }
 
+    }
+
+    public void convert(InputStream inputStream, OutputStream outputStream, AudioFormat format) throws Exception {
+        Frame audioSamples;
+        FFmpegFrameRecorder recorder = null;
+        //抓取器
+        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(inputStream);
+        try {
+            // 开启抓取器
+            grabber.start();
+            recorder = new FFmpegFrameRecorder(outputStream, grabber.getAudioChannels());
+            recorder.setAudioOption("crf", "0");
+//            recorder.setAudioCodec(avcodec.AV_CODEC_ID_PCM_S16LE);
+//            recorder.setAudioBitrate(320000);
+            recorder.setAudioChannels(grabber.getAudioChannels());
+            recorder.setSampleRate(44100);
+            recorder.setAudioQuality(0);
+            recorder.setFormat(format.getValue());
+            // 开启录制器
+            recorder.start();
+            // 抓取音频
+            while ((audioSamples = grabber.grabSamples()) != null) {
+                recorder.setTimestamp(grabber.getTimestamp());
+                recorder.record(audioSamples);
+            }
+            recorder.stop();
+            grabber.flush();
+            grabber.stop();
+        } catch (Exception e) {
+            logger.error("audio convert failed.{}", ExceptionUtils.getStackTrace(e));
+            throw e;
+        } finally {
+            if (recorder != null) {
+                recorder.stop();
+            }
+            grabber.stop();
+        }
     }
 
 }
