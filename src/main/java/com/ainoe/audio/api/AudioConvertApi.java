@@ -10,13 +10,10 @@ import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.annotation.Input;
 import com.ainoe.audio.restful.annotation.Param;
 import com.ainoe.audio.restful.component.RestfulBinaryStreamApiComponentBase;
+import com.ainoe.audio.util.AudioUtil;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.FFmpegFrameRecorder;
-import org.bytedeco.javacv.Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,21 +24,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
 
     static Logger logger = LoggerFactory.getLogger(AudioConvertApi.class);
-
-    static Map<String, Integer> bitRateMap = new HashMap<>();
-
-    static {
-        bitRateMap.put("128Kbs", 128000);
-        bitRateMap.put("192Kbs", 192000);
-        bitRateMap.put("320Kbs", 320000);
-    }
 
     @Override
     public String getToken() {
@@ -75,9 +63,9 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
         }
         if (AudioFormat.MP3.equals(audioFormat)) {
             if (StringUtils.isNotBlank(bitRateStr)) {
-                bitRate = bitRateMap.get(bitRateStr);
+                bitRate = AudioUtil.bitRateMap.get(bitRateStr);
             } else {
-                bitRate = bitRateMap.get("320Kbs");
+                bitRate = AudioUtil.bitRateMap.get("320Kbs");
             }
         }
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -96,44 +84,9 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
                 throw new UnknownAudioFormatException(suffix);
             }
             String outputFileName = filename.substring(0, filename.lastIndexOf(".") + 1) + audioFormat.getValue();
-            convert(inputStream, Config.AUDIO_HOME() + File.separator + outputFileName, audioFormat, bitRate);
+            AudioUtil.convert(inputStream, Config.AUDIO_HOME() + File.separator + outputFileName, audioFormat, bitRate);
         }
-
         return null;
-    }
-
-    public void convert(InputStream inputStream, String outputPath, AudioFormat format, Integer bitRate) throws Exception {
-        FFmpegFrameRecorder recorder = null;
-        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(inputStream);
-        try {
-            grabber.start();
-            recorder = new FFmpegFrameRecorder(outputPath, grabber.getAudioChannels());
-            recorder.setMetadata(grabber.getMetadata());
-            if (AudioFormat.MP3.equals(format)) {
-//                recorder.setAudioOption("crf", "0");
-                recorder.setAudioBitrate(bitRate);
-            }
-            recorder.setAudioChannels(grabber.getAudioChannels());
-            recorder.setSampleRate(grabber.getSampleRate());
-            recorder.setFormat(format.getValue());
-            recorder.start();
-            Frame audioSamples;
-            while ((audioSamples = grabber.grabSamples()) != null) {
-                recorder.setTimestamp(grabber.getTimestamp());
-                recorder.record(audioSamples);
-            }
-            recorder.stop();
-            grabber.flush();
-            grabber.stop();
-        } catch (Exception e) {
-            logger.error("audio convert failed.{}", ExceptionUtils.getStackTrace(e));
-            throw e;
-        } finally {
-            if (recorder != null) {
-                recorder.stop();
-            }
-            grabber.stop();
-        }
     }
 
 }
