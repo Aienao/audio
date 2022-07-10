@@ -11,7 +11,7 @@
 
 `java -jar -Xbootclasspath/a:配置文件目录路径 {audio.jar所在目录路径}/audio.jar`
 
-以windows为例
+以windows为例：
 
 `java -jar -Xbootclasspath/a:D:\document\audio\config D:\document\audio\audio.jar`
 
