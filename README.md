@@ -7,7 +7,7 @@
 - javacv
 
 # 启动命令
-> application.properties与logback-spring.xml需放在配置文件目录下
+> application.properties需放在配置文件目录下
 
 `java -jar -Xbootclasspath/a:配置文件目录路径 {audio.jar所在目录路径}/audio.jar`
 

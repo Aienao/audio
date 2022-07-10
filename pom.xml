@@ -35,10 +35,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <!--不打包资源文件-->
+                    <!--不打包配置文件-->
                     <excludes>
                         <exclude>*.properties</exclude>
-                        <exclude>logback-spring.xml</exclude>
                     </excludes>
                 </configuration>
             </plugin>
