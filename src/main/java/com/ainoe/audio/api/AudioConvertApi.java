@@ -118,7 +118,7 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             grabber.start();
             recorder = new FFmpegFrameRecorder(outputStream, grabber.getAudioChannels());
             if (AudioFormat.MP3.equals(format)) {
-                recorder.setAudioOption("crf", "0");
+//                recorder.setAudioOption("crf", "0");
                 recorder.setAudioBitrate(bitRate);
             }
             recorder.setAudioChannels(grabber.getAudioChannels());
