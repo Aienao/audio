@@ -15,7 +15,7 @@ public class AudioVo {
     private Integer bitRate;
     @EntityField(name = "声道数", type = ApiParamType.INTEGER)
     private Integer channels;
-    @EntityField(name = "发行年份", type = ApiParamType.STRING)
+    @EntityField(name = "发行日期", type = ApiParamType.STRING)
     private String date;
     @EntityField(name = "作者", type = ApiParamType.STRING)
     private String artist;
