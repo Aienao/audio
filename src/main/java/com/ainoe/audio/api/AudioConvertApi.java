@@ -83,6 +83,7 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             if (sourceFormat == null) {
                 throw new UnknownAudioFormatException(suffix);
             }
+            logger.debug("converting {}.", filename);
             String outputFileName = filename.substring(0, filename.lastIndexOf(".") + 1) + audioFormat.getValue();
             AudioUtil.convert(inputStream, Config.AUDIO_HOME() + File.separator + outputFileName, audioFormat, bitRate);
         }
