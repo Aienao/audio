@@ -6,7 +6,9 @@ import com.ainoe.audio.exception.ConfigLostException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 public class ConfigServiceImpl implements ConfigService {
@@ -16,8 +18,8 @@ public class ConfigServiceImpl implements ConfigService {
         if (StringUtils.isBlank(Config.AUDIO_HOME())) {
             throw new ConfigLostException("audio.home");
         }
-        File home = new File(Config.AUDIO_HOME());
-        if (!home.exists() || !home.isDirectory()) {
+        Path home = Paths.get(Config.AUDIO_HOME());
+        if (!Files.exists(home) || !Files.isDirectory(home)) {
             throw new AudioHomeNotFoundException(Config.AUDIO_HOME());
         }
     }
