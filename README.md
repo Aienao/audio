@@ -7,7 +7,11 @@
 - javacv
 
 # 启动命令
-> application.properties与logback-spring.xml需放在与audio.jar同级的config目录下
+> application.properties与logback-spring.xml需放在配置文件目录下
+
+`java -jar -Xbootclasspath/a:配置文件目录路径 {audio.jar所在目录路径}/audio.jar`
+
+以windows为例
 
 `java -jar -Xbootclasspath/a:D:\document\audio\config D:\document\audio\audio.jar`
 
