@@ -1,10 +1,10 @@
 # audio
-基于FFmpeg技术的音频格式转换项目
+基于FFmpeg的音频格式转换工具
 
 # 技术栈
-- springboot
 - ffmpeg
 - javacv
+- springboot
 
 # 启动命令
 > application.properties需放在配置文件目录下
