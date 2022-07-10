@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -98,7 +99,7 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
 //            response.setHeader("Content-Disposition", " attachment; filename=\"" + outputFileName + "\"");
 //            response.setContentType("application/octet-stream");
 //            try (ServletOutputStream outputStream = response.getOutputStream()) {
-//                convert(inputStream, outputStream, audioFormat);
+//                convert(inputStream, outputStream, audioFormat, bitRate);
 //            } catch (Exception ex) {
 //                logger.error(ex.getMessage(), ex);
 //            }
@@ -124,7 +125,6 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             recorder.setAudioChannels(grabber.getAudioChannels());
             recorder.setSampleRate(grabber.getSampleRate());
             recorder.setFormat(format.getValue());
-            recorder.setAudioMetadata(grabber.getAudioMetadata());
             // 开启录制器
             recorder.start();
             // 抓取音频
@@ -146,7 +146,7 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
         }
     }
 
-    public void convert(InputStream inputStream, OutputStream outputStream, AudioFormat format) throws Exception {
+    public void convert(InputStream inputStream, OutputStream outputStream, AudioFormat format, Integer bitRate) throws Exception {
         Frame audioSamples;
         FFmpegFrameRecorder recorder = null;
         //抓取器
@@ -155,12 +155,12 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             // 开启抓取器
             grabber.start();
             recorder = new FFmpegFrameRecorder(outputStream, grabber.getAudioChannels());
-            recorder.setAudioOption("crf", "0");
-//            recorder.setAudioCodec(avcodec.AV_CODEC_ID_PCM_S16LE);
-//            recorder.setAudioBitrate(320000);
+            if (AudioFormat.MP3.equals(format)) {
+//                recorder.setAudioOption("crf", "0");
+                recorder.setAudioBitrate(bitRate);
+            }
             recorder.setAudioChannels(grabber.getAudioChannels());
-            recorder.setSampleRate(44100);
-            recorder.setAudioQuality(0);
+            recorder.setSampleRate(grabber.getSampleRate());
             recorder.setFormat(format.getValue());
             // 开启录制器
             recorder.start();
