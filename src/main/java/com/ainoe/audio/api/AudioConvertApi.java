@@ -102,15 +102,13 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
         return null;
     }
 
-    public void convert(InputStream inputStream, String outputStream, AudioFormat format, Integer bitRate) throws Exception {
-        Frame audioSamples;
+    public void convert(InputStream inputStream, String outputPath, AudioFormat format, Integer bitRate) throws Exception {
         FFmpegFrameRecorder recorder = null;
-        //抓取器
         FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(inputStream);
         try {
-            // 开启抓取器
             grabber.start();
-            recorder = new FFmpegFrameRecorder(outputStream, grabber.getAudioChannels());
+            recorder = new FFmpegFrameRecorder(outputPath, grabber.getAudioChannels());
+            recorder.setMetadata(grabber.getMetadata());
             if (AudioFormat.MP3.equals(format)) {
 //                recorder.setAudioOption("crf", "0");
                 recorder.setAudioBitrate(bitRate);
@@ -118,9 +116,8 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             recorder.setAudioChannels(grabber.getAudioChannels());
             recorder.setSampleRate(grabber.getSampleRate());
             recorder.setFormat(format.getValue());
-            // 开启录制器
             recorder.start();
-            // 抓取音频
+            Frame audioSamples;
             while ((audioSamples = grabber.grabSamples()) != null) {
                 recorder.setTimestamp(grabber.getTimestamp());
                 recorder.record(audioSamples);
