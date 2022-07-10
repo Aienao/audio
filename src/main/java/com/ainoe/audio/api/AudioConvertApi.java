@@ -2,7 +2,9 @@ package com.ainoe.audio.api;
 
 import com.ainoe.audio.config.Config;
 import com.ainoe.audio.constvalue.AudioFormat;
-import com.ainoe.audio.exception.core.ApiRuntimeException;
+import com.ainoe.audio.exception.ConfigLostException;
+import com.ainoe.audio.exception.FileNameSuffixLostException;
+import com.ainoe.audio.exception.UnknownAudioFormatException;
 import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.annotation.Input;
 import com.ainoe.audio.restful.annotation.Param;
@@ -44,7 +46,7 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
     @Override
     public Object myDoService(JSONObject jsonObj, HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (StringUtils.isBlank(Config.AUDIO_HOME())) {
-            throw new ApiRuntimeException("请先配置audio.home");
+            throw new ConfigLostException("audio.home");
         }
         String format = jsonObj.getString("format");
         if (StringUtils.isBlank(format)) {
@@ -61,6 +63,14 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             MultipartFile multipartFile = fileMap.entrySet().stream().findFirst().get().getValue();
             InputStream inputStream = multipartFile.getInputStream();
             String filename = multipartFile.getOriginalFilename();
+            if (!filename.contains(".")) {
+                throw new FileNameSuffixLostException(filename);
+            }
+            String suffix = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+            AudioFormat sourceFormat = AudioFormat.getAudioFormat(suffix);
+            if (sourceFormat == null) {
+                throw new UnknownAudioFormatException(suffix);
+            }
             convert(inputStream, Config.AUDIO_HOME() + File.separator + filename.substring(0, filename.lastIndexOf(".") + 1) + audioFormat.getName(), audioFormat);
         }
 
@@ -77,11 +87,11 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
         // 开启抓取器
         if (start(grabber)) {
             recorder = new FFmpegFrameRecorder(outputStream, grabber.getAudioChannels());
-            recorder.setAudioOption("crf", "0");
-            recorder.setAudioCodec(format.getAudioCodec());
-            recorder.setAudioBitrate(grabber.getAudioBitrate());
-            recorder.setAudioChannels(grabber.getAudioChannels());
-            recorder.setSampleRate(grabber.getSampleRate());
+//            recorder.setAudioOption("crf", "0");
+//            recorder.setAudioCodec(avcodec.AV_CODEC_ID_PCM_S16LE);
+//            recorder.setAudioBitrate(grabber.getAudioBitrate());
+//            recorder.setAudioChannels(grabber.getAudioChannels());
+//            recorder.setSampleRate(grabber.getSampleRate());
             recorder.setAudioQuality(0);
             recorder.setFormat(format.getName());
             // 开启录制器
