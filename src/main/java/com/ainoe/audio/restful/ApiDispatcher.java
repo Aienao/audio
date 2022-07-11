@@ -79,22 +79,29 @@ public class ApiDispatcher {
     @RequestMapping(value = "/rest/**", method = RequestMethod.GET)
     public void dispatcherForGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         JSONObject paramObj = getParameters(request);
-        doRestRequest(request, response, paramObj);
+        doRequest(request, response, paramObj, ApiType.OBJECT);
     }
 
     @RequestMapping(value = "/rest/**", method = RequestMethod.POST, consumes = "application/json")
     public void dispatcherForPost(@RequestBody JSONObject json, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        doRestRequest(request, response, json);
+        doRequest(request, response, json, ApiType.OBJECT);
     }
 
     @RequestMapping(value = "/binary/**", method = RequestMethod.GET)
     public void dispatcherForPostBinary(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        doBinaryRequest(request, response);
+        JSONObject paramObj = getParameters(request);
+        doRequest(request, response, paramObj, ApiType.BINARY);
+    }
+
+    @RequestMapping(value = "/binary/**", method = RequestMethod.POST, consumes = "application/json")
+    public void dispatcherForPostBinaryMultipart(@RequestBody JSONObject json, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        doRequest(request, response, json, ApiType.BINARY);
     }
 
     @RequestMapping(value = "/binary/**", method = RequestMethod.POST, consumes = "multipart/form-data")
     public void dispatcherForPostBinaryMultipart(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        doBinaryRequest(request, response);
+        JSONObject paramObj = getParameters(request);
+        doRequest(request, response, paramObj, ApiType.BINARY);
     }
 
     private String getToken(HttpServletRequest request) {
@@ -135,11 +142,11 @@ public class ApiDispatcher {
         }
     }
 
-    private void doRestRequest(HttpServletRequest request, HttpServletResponse response, JSONObject paramObj) throws IOException {
+    private void doRequest(HttpServletRequest request, HttpServletResponse response, JSONObject paramObj, ApiType apiType) throws IOException {
         String token = getToken(request);
         JSON returnObj;
         try {
-            returnObj = doIt(request, response, token, ApiType.OBJECT, paramObj != null ? paramObj : new JSONObject());
+            returnObj = doIt(request, response, token, apiType, paramObj != null ? paramObj : new JSONObject());
         } catch (ApiRuntimeException ex) {
             response.setStatus(520);
             JSONObject rObj = new JSONObject();
@@ -153,32 +160,6 @@ public class ApiDispatcher {
             rObj.put("Message", ExceptionUtils.getStackTrace(ex));
             returnObj = rObj;
             logger.error(ex.getMessage(), ex);
-        }
-        if (!response.isCommitted()) {
-            response.setContentType(RESPONSE_TYPE_JSON);
-            response.getWriter().print(returnObj);
-        }
-    }
-
-    private void doBinaryRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String token = getToken(request);
-        JSONObject paramObj = getParameters(request);
-        JSON returnObj;
-        try {
-            returnObj = doIt(request, response, token, ApiType.BINARY, paramObj);
-        } catch (ApiRuntimeException ex) {
-            response.setStatus(520);
-            JSONObject rObj = new JSONObject();
-            rObj.put("Status", "ERROR");
-            rObj.put("Message", ex.getMessage());
-            returnObj = rObj;
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
-            response.setStatus(521);
-            JSONObject rObj = new JSONObject();
-            rObj.put("Status", "ERROR");
-            rObj.put("Message", ExceptionUtils.getStackFrames(ex));
-            returnObj = rObj;
         }
         if (!response.isCommitted()) {
             response.setContentType(RESPONSE_TYPE_JSON);
