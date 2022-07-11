@@ -1,20 +1,20 @@
-package com.ainoe.audio.service;
+package com.ainoe.audio.util;
 
 import com.ainoe.audio.config.Config;
 import com.ainoe.audio.exception.AudioHomeNotFoundException;
 import com.ainoe.audio.exception.ConfigLostException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@Service
-public class ConfigServiceImpl implements ConfigService {
+public class ConfigUtil {
 
-    @Override
-    public void checkAudioHome() {
+    /**
+     * 检查audio.home目录是否存在
+     */
+    public static void checkAudioHome() {
         if (StringUtils.isBlank(Config.AUDIO_HOME())) {
             throw new ConfigLostException("audio.home");
         }

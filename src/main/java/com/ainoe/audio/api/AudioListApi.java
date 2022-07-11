@@ -4,15 +4,14 @@ import com.ainoe.audio.config.Config;
 import com.ainoe.audio.dto.AudioVo;
 import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.component.RestfulApiComponentBase;
-import com.ainoe.audio.service.ConfigService;
 import com.ainoe.audio.util.AudioUtil;
+import com.ainoe.audio.util.ConfigUtil;
 import com.alibaba.fastjson.JSONObject;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
@@ -25,9 +24,6 @@ import java.util.Map;
 public class AudioListApi extends RestfulApiComponentBase {
 
     static Logger logger = LoggerFactory.getLogger(AudioListApi.class);
-
-    @Resource
-    ConfigService configService;
 
     @Override
     public String getToken() {
@@ -42,7 +38,7 @@ public class AudioListApi extends RestfulApiComponentBase {
     @Description(desc = "音频列表")
     @Override
     public Object myDoService(JSONObject jsonObj) throws IOException {
-        configService.checkAudioHome();
+        ConfigUtil.checkAudioHome();
         Path path = Paths.get(Config.AUDIO_HOME());
         List<AudioVo> result = new ArrayList<>();
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {

@@ -8,8 +8,8 @@ import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.annotation.Input;
 import com.ainoe.audio.restful.annotation.Param;
 import com.ainoe.audio.restful.component.RestfulBinaryStreamApiComponentBase;
-import com.ainoe.audio.service.ConfigService;
 import com.ainoe.audio.util.AudioUtil;
+import com.ainoe.audio.util.ConfigUtil;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -30,9 +29,6 @@ import java.util.Map;
 public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
 
     static Logger logger = LoggerFactory.getLogger(AudioConvertApi.class);
-
-    @Resource
-    ConfigService configService;
 
     @Override
     public String getToken() {
@@ -51,7 +47,7 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
     @Description(desc = "音频格式转换")
     @Override
     public Object myDoService(JSONObject jsonObj, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        configService.checkAudioHome();
+        ConfigUtil.checkAudioHome();
         String format = jsonObj.getString("format");
         String bitRateStr = jsonObj.getString("bitRate");
         Integer bitRate = null;
