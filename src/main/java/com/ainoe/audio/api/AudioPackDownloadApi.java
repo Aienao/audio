@@ -69,10 +69,15 @@ public class AudioPackDownloadApi extends RestfulBinaryStreamApiComponentBase {
                 InputStream is = Files.newInputStream(path);
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
                 IOUtils.copy(is, os);
+                os.flush();
+                os.close();
+                is.close();
                 zos.putNextEntry(new ZipEntry(name));
                 zos.write(os.toByteArray());
                 zos.closeEntry();
             }
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
         }
         if (expireAudio.size() > 0) {
             logger.error("expire audio file:{}", String.join(",", expireAudio));
