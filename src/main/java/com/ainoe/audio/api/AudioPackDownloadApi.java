@@ -80,7 +80,7 @@ public class AudioPackDownloadApi extends RestfulBinaryStreamApiComponentBase {
             logger.error(ex.getMessage(), ex);
         }
         if (expireAudio.size() > 0) {
-            logger.error("expire audio file:{}", String.join(",", expireAudio));
+            logger.error("expired audio:{}", String.join(",", expireAudio));
         }
         return null;
     }

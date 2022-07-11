@@ -3,7 +3,7 @@ package com.ainoe.audio.api;
 import com.ainoe.audio.config.Config;
 import com.ainoe.audio.constvalue.ApiParamType;
 import com.ainoe.audio.exception.AudioDownloadException;
-import com.ainoe.audio.exception.AudioExpireException;
+import com.ainoe.audio.exception.AudioExpiredException;
 import com.ainoe.audio.exception.core.ApiRuntimeException;
 import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.annotation.Input;
@@ -55,7 +55,7 @@ public class AudioDownloadApi extends RestfulBinaryStreamApiComponentBase {
         }
         Path path = Paths.get(Config.AUDIO_HOME() + File.separator + name);
         if (!Files.exists(path) || !Files.isRegularFile(path)) {
-            throw new AudioExpireException(name);
+            throw new AudioExpiredException(name);
         }
         String fileName = AudioUtil.getEncodedFileName(request.getHeader("User-Agent"), name);
         response.setHeader("Content-Disposition", " attachment; filename=\"" + fileName + "\"");
@@ -63,7 +63,7 @@ public class AudioDownloadApi extends RestfulBinaryStreamApiComponentBase {
         try (ServletOutputStream os = response.getOutputStream(); InputStream is = Files.newInputStream(path);) {
             IOUtils.copy(is, os);
         } catch (Exception ex) {
-            logger.error("download file:" + name + " failed.", ex);
+            logger.error(ex.getMessage(), ex);
             throw new AudioDownloadException(name);
         }
         return null;
