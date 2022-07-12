@@ -7,6 +7,7 @@ import com.ainoe.audio.restful.component.RestfulApiComponentBase;
 import com.ainoe.audio.util.AudioUtil;
 import com.ainoe.audio.util.ConfigUtil;
 import com.alibaba.fastjson.JSONObject;
+import org.bytedeco.ffmpeg.avformat.AVFormatContext;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,14 +50,14 @@ public class AudioListApi extends RestfulApiComponentBase {
                     try (InputStream inputStream = Files.newInputStream(file);) {
                         grabber = new FFmpegFrameGrabber(inputStream);
                         grabber.start();
-                        // todo flac的比特率获取不到
+                        AVFormatContext formatContext = grabber.getFormatContext();
                         Map<String, String> metadata = grabber.getMetadata();
                         result.add(new AudioVo(file.toFile().getName()
                                 , grabber.getFormat()
                                 , grabber.getSampleRate()
-                                , grabber.getAudioBitrate()
+                                , (int) (formatContext.bit_rate() / 1000)
                                 , grabber.getAudioChannels()
-                                , AudioUtil.getDuration(grabber.getLengthInTime())
+                                , AudioUtil.getDuration(formatContext.duration())
                                 , metadata.get("date")
                                 , metadata.get("artist")
                                 , metadata.get("album")
