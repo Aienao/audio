@@ -49,6 +49,7 @@ public class AudioListApi extends RestfulApiComponentBase {
                     try (InputStream inputStream = Files.newInputStream(file);) {
                         grabber = new FFmpegFrameGrabber(inputStream);
                         grabber.start();
+                        // todo flac的比特率获取不到
                         Map<String, String> metadata = grabber.getMetadata();
                         result.add(new AudioVo(file.toFile().getName()
                                 , grabber.getFormat()
