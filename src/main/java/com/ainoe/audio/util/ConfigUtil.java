@@ -40,7 +40,7 @@ public class ConfigUtil {
         if (StringUtils.isNotBlank(Config.AUDIO_HOME()) && autoCreate) {
             File home = new File(Config.AUDIO_HOME());
             if (!home.exists() || !home.isDirectory()) {
-                Files.createDirectory(Paths.get(Config.AUDIO_HOME()));
+                Files.createDirectories(Paths.get(Config.AUDIO_HOME()));
                 logger.info("auto create audio home: " + Config.AUDIO_HOME());
             }
         }
