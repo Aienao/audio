@@ -10,8 +10,8 @@ public class AudioVo {
     private String format;
     @EntityField(name = "采样率", type = ApiParamType.INTEGER)
     private Integer sampleRate;
-    @EntityField(name = "比特率", type = ApiParamType.INTEGER)
-    private Integer bitRate;
+    @EntityField(name = "比特率", type = ApiParamType.LONG)
+    private Long bitRate; // 原始值，换算为Kbs的公式：bitRate / 1000
     @EntityField(name = "声道数", type = ApiParamType.INTEGER)
     private Integer channels;
     @EntityField(name = "时长", type = ApiParamType.STRING)
@@ -27,12 +27,12 @@ public class AudioVo {
     @EntityField(name = "标题", type = ApiParamType.STRING)
     private String title;
     @EntityField(name = "文件大小", type = ApiParamType.LONG)
-    private Long size;
+    private Long size; // 单位为字节，换算为MB的公式：size / 1024 / 1024
 
     public AudioVo() {
     }
 
-    public AudioVo(String name, String format, Integer sampleRate, Integer bitRate, Integer channels, String duration, String date, String artist, String album, String track, String title, Long size) {
+    public AudioVo(String name, String format, Integer sampleRate, Long bitRate, Integer channels, String duration, String date, String artist, String album, String track, String title, Long size) {
         this.name = name;
         this.format = format;
         this.sampleRate = sampleRate;
@@ -71,11 +71,11 @@ public class AudioVo {
         this.sampleRate = sampleRate;
     }
 
-    public Integer getBitRate() {
+    public Long getBitRate() {
         return bitRate;
     }
 
-    public void setBitRate(Integer bitRate) {
+    public void setBitRate(Long bitRate) {
         this.bitRate = bitRate;
     }
 

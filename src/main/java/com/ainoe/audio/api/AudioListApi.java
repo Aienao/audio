@@ -55,7 +55,7 @@ public class AudioListApi extends RestfulApiComponentBase {
                         result.add(new AudioVo(file.toFile().getName()
                                 , grabber.getFormat()
                                 , grabber.getSampleRate()
-                                , (int) (formatContext.bit_rate() / 1000)
+                                , formatContext.bit_rate()
                                 , grabber.getAudioChannels()
                                 , AudioUtil.getDuration(formatContext.duration())
                                 , metadata.get("date")
