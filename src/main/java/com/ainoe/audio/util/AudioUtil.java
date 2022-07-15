@@ -1,5 +1,6 @@
 package com.ainoe.audio.util;
 
+import com.ainoe.audio.config.Config;
 import com.ainoe.audio.constvalue.AudioFormat;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -8,10 +9,15 @@ import org.bytedeco.javacv.Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -113,6 +119,28 @@ public class AudioUtil {
             fileName = new String(fileName.replace(" ", "").getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
         }
         return fileName;
+    }
+
+    /**
+     * 清理audio.home
+     *
+     * @throws IOException
+     */
+    public static void cleanAudioHome() throws IOException {
+        LocalDateTime expiredTime = LocalDateTime.now().minusDays(Config.AUDIO_RETAIN_DAYS());
+        Path path = Paths.get(Config.AUDIO_HOME());
+        Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (Files.isRegularFile(file)) {
+                    LocalDateTime lastModifiedTime = Files.getLastModifiedTime(file).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    if (lastModifiedTime.isBefore(expiredTime)) {
+                        Files.delete(file);
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 
     /**
