@@ -18,6 +18,7 @@ public class Config {
     private static final String CONFIG_FILE = "application.properties";
     private static String AUDIO_HOME; // 音频文件根目录
     private static Boolean AUDIO_AUDIO_CLEAN; // 是否自动清理audio.home下的audio
+    private static String AUDIO_AUDIO_CLEAN_CRON; // 自动清理audio.home作业cron
     private static Integer AUDIO_RETAIN_DAYS; // audio保留天数
 
     public static String AUDIO_HOME() {
@@ -26,6 +27,10 @@ public class Config {
 
     public static Boolean AUDIO_AUDIO_CLEAN() {
         return AUDIO_AUDIO_CLEAN;
+    }
+
+    public static String AUDIO_AUDIO_CLEAN_CRON() {
+        return AUDIO_AUDIO_CLEAN_CRON;
     }
 
     public static Integer AUDIO_RETAIN_DAYS() {
@@ -40,6 +45,7 @@ public class Config {
             AUDIO_HOME = prop.getProperty("audio.home");
             boolean audioHomeAutoCreate = Boolean.parseBoolean(prop.getProperty("audio.home.auto.create", "true"));
             AUDIO_AUDIO_CLEAN = Boolean.parseBoolean(prop.getProperty("audio.auto.clean", "false"));
+            AUDIO_AUDIO_CLEAN_CRON = prop.getProperty("audio.auto.clean.cron", "0 0 0 * * ?");
             AUDIO_RETAIN_DAYS = Integer.parseInt(prop.getProperty("audio.retain.days"));
             ConfigUtil.createAudioHome(audioHomeAutoCreate);
         } catch (IOException e) {
