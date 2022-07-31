@@ -45,4 +45,18 @@ public class ConfigUtil {
             }
         }
     }
+
+    /**
+     * 创建用户audio目录
+     *
+     * @param uuid 用户uuid
+     * @throws IOException
+     */
+    public static Path createUserAudioHome(String uuid) throws IOException {
+        Path path = Paths.get(Config.AUDIO_HOME() + File.separator + uuid);
+        if (!Files.exists(path) || !Files.isDirectory(path)) {
+            Files.createDirectories(path);
+        }
+        return path;
+    }
 }

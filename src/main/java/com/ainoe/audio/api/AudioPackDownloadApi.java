@@ -8,7 +8,6 @@ import com.ainoe.audio.restful.annotation.Input;
 import com.ainoe.audio.restful.annotation.Param;
 import com.ainoe.audio.restful.component.RestfulBinaryStreamApiComponentBase;
 import com.ainoe.audio.util.AudioUtil;
-import com.ainoe.audio.util.ConfigUtil;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -50,7 +49,7 @@ public class AudioPackDownloadApi extends RestfulBinaryStreamApiComponentBase {
     @Description(desc = "音频打包下载")
     @Override
     public Object myDoService(JSONObject jsonObj, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ConfigUtil.checkAudioHome();
+        String uuid = jsonObj.getString("uuid");
         List<String> list = jsonObj.getJSONArray("nameList").toJavaList(String.class);
         if (CollectionUtils.isEmpty(list)) {
             throw new ApiRuntimeException("请选择下载的音频");
@@ -61,7 +60,7 @@ public class AudioPackDownloadApi extends RestfulBinaryStreamApiComponentBase {
         response.setHeader("Content-Disposition", " attachment; filename=\"" + fileName + "\"");
         try (ZipOutputStream zos = new ZipOutputStream(response.getOutputStream())) {
             for (String name : list) {
-                Path path = Paths.get(Config.AUDIO_HOME() + File.separator + name);
+                Path path = Paths.get(Config.AUDIO_HOME() + File.separator + uuid + File.separator + name);
                 if (!Files.exists(path) || !Files.isRegularFile(path)) {
                     expireAudio.add(name);
                     continue;

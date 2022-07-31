@@ -6,7 +6,6 @@ import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.annotation.Input;
 import com.ainoe.audio.restful.annotation.Param;
 import com.ainoe.audio.restful.component.RestfulApiComponentBase;
-import com.ainoe.audio.util.ConfigUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -43,7 +43,7 @@ public class AudioDeleteApi extends RestfulApiComponentBase {
     @Description(desc = "删除音频")
     @Override
     public Object myDoService(JSONObject jsonObj) throws IOException {
-        ConfigUtil.checkAudioHome();
+        String uuid = jsonObj.getString("uuid");
         JSONArray nameList = jsonObj.getJSONArray("nameList");
         Integer deleteAll = jsonObj.getInteger("deleteAll");
         List<String> list = new ArrayList<>();
@@ -52,7 +52,7 @@ public class AudioDeleteApi extends RestfulApiComponentBase {
         } else {
             list = nameList.toJavaList(String.class);
         }
-        Path path = Paths.get(Config.AUDIO_HOME());
+        Path path = Paths.get(Config.AUDIO_HOME() + File.separator + uuid);
         List<String> finalList = list;
         Integer finalDeleteAll = deleteAll;
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {

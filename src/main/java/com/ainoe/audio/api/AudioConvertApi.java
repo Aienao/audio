@@ -9,7 +9,6 @@ import com.ainoe.audio.restful.annotation.Input;
 import com.ainoe.audio.restful.annotation.Param;
 import com.ainoe.audio.restful.component.RestfulBinaryStreamApiComponentBase;
 import com.ainoe.audio.util.AudioUtil;
-import com.ainoe.audio.util.ConfigUtil;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +46,7 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
     @Description(desc = "音频格式转换")
     @Override
     public Object myDoService(JSONObject jsonObj, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ConfigUtil.checkAudioHome();
+        String uuid = jsonObj.getString("uuid");
         String format = jsonObj.getString("format");
         String bitRateStr = jsonObj.getString("bitRate");
         Integer bitRate = null;
@@ -77,7 +76,7 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             }
             logger.debug("converting {}.", filename);
             String outputFileName = filename.substring(0, filename.lastIndexOf(".") + 1) + audioFormat.getValue();
-            AudioUtil.convert(inputStream, Config.AUDIO_HOME() + File.separator + outputFileName, audioFormat, bitRate);
+            AudioUtil.convert(inputStream, Config.AUDIO_HOME() + File.separator + uuid + File.separator + outputFileName, audioFormat, bitRate);
         }
         return null;
     }
