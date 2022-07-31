@@ -60,6 +60,9 @@ public class AudioDownloadApi extends RestfulBinaryStreamApiComponentBase {
         String fileName = AudioUtil.getEncodedFileName(request.getHeader("User-Agent"), name);
         response.setHeader("Content-Disposition", " attachment; filename=\"" + fileName + "\"");
         response.setContentType("application/octet-stream");
+        // 以下两行为aplayer拖拽进度条必需的选项
+        response.setHeader("Accept-Ranges", "bytes");
+        response.setContentLengthLong(Files.size(path));
         try (ServletOutputStream os = response.getOutputStream(); InputStream is = Files.newInputStream(path);) {
             IOUtils.copy(is, os);
         } catch (Exception ex) {
