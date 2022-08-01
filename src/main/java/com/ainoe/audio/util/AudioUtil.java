@@ -146,7 +146,8 @@ public class AudioUtil {
     }
 
     /**
-     * 使用FFmpeg获取音频元数据，此方式无法获取专辑封面，性能也较差
+     * 使用FFmpeg获取音频元数据
+     * 此方式无法获取专辑封面，性能也较差，优点在于所有格式的音频都可用此方法读取元数据
      *
      * @param grabber FFmpegFrameGrabber对象，从方法外构建并传入，释放也需要在方法外
      * @param file    目标音频文件
