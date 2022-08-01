@@ -2,7 +2,9 @@ package com.ainoe.audio.util;
 
 import com.ainoe.audio.config.Config;
 import com.ainoe.audio.constvalue.AudioFormat;
+import com.ainoe.audio.dto.AudioVo;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.bytedeco.ffmpeg.avformat.AVFormatContext;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
@@ -141,6 +143,31 @@ public class AudioUtil {
                 return FileVisitResult.CONTINUE;
             }
         });
+    }
+
+    /**
+     * 使用FFmpeg获取音频元数据，此方式无法获取专辑封面，性能也较差
+     *
+     * @param grabber FFmpegFrameGrabber对象，从方法外构建并传入，释放也需要在方法外
+     * @param file    目标音频文件
+     * @return
+     * @throws IOException
+     */
+    public static AudioVo getAudioDetailByFFmpeg(FFmpegFrameGrabber grabber, Path file) throws IOException {
+        AVFormatContext formatContext = grabber.getFormatContext();
+        Map<String, String> metadata = grabber.getMetadata();
+        return new AudioVo(file.toFile().getName()
+                , grabber.getFormat()
+                , grabber.getSampleRate()
+                , formatContext.bit_rate()
+                , grabber.getAudioChannels()
+                , AudioUtil.getDuration(formatContext.duration())
+                , metadata.get("date")
+                , metadata.get("artist")
+                , metadata.get("album")
+                , metadata.get("track")
+                , metadata.get("title")
+                , Files.size(file));
     }
 
     /**
