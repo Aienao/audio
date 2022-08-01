@@ -162,7 +162,7 @@ public class AudioUtil {
                 , grabber.getSampleRate()
                 , formatContext.bit_rate()
                 , grabber.getAudioChannels()
-                , AudioUtil.getDuration(formatContext.duration())
+                , getDuration(formatContext.duration())
                 , metadata.get("date")
                 , metadata.get("artist")
                 , metadata.get("album")
