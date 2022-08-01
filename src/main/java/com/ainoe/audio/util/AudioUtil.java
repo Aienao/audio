@@ -154,7 +154,7 @@ public class AudioUtil {
      * @return
      * @throws IOException
      */
-    public static AudioVo getAudioMetaDataByFFmpeg(FFmpegFrameGrabber grabber, Path file) throws IOException {
+    public static AudioVo getAudioMetadataByFFmpeg(FFmpegFrameGrabber grabber, Path file) throws IOException {
         AVFormatContext formatContext = grabber.getFormatContext();
         Map<String, String> metadata = grabber.getMetadata();
         return new AudioVo(file.toFile().getName()
