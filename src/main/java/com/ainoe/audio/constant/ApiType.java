@@ -1,4 +1,4 @@
-package com.ainoe.audio.constvalue;
+package com.ainoe.audio.constant;
 
 public enum ApiType {
     OBJECT("object", "对象模式", "rest/"),

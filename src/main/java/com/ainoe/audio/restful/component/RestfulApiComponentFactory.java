@@ -1,7 +1,7 @@
 package com.ainoe.audio.restful.component;
 
 
-import com.ainoe.audio.constvalue.ApiType;
+import com.ainoe.audio.constant.ApiType;
 import com.ainoe.audio.dto.ApiHandlerVo;
 import com.ainoe.audio.dto.ApiVo;
 import com.ainoe.audio.restful.base.IApiComponent;

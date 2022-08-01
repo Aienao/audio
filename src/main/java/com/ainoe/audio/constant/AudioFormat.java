@@ -1,10 +1,10 @@
-package com.ainoe.audio.constvalue;
+package com.ainoe.audio.constant;
 
 public enum AudioFormat {
     FLAC("flac"),
     MP3("mp3"),
     WAV("wav"),
-    APE("ape"),
+//    APE("ape"),
     ;
     private final String value;
 

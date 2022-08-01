@@ -1,7 +1,7 @@
 package com.ainoe.audio.restful.annotation;
 
 
-import com.ainoe.audio.constvalue.ApiParamType;
+import com.ainoe.audio.constant.ApiParamType;
 
 import java.lang.annotation.*;
 

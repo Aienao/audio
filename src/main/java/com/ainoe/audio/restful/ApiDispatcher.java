@@ -2,7 +2,7 @@ package com.ainoe.audio.restful;
 
 
 import com.ainoe.audio.config.Config;
-import com.ainoe.audio.constvalue.ApiType;
+import com.ainoe.audio.constant.ApiType;
 import com.ainoe.audio.dto.ApiHandlerVo;
 import com.ainoe.audio.dto.ApiVo;
 import com.ainoe.audio.exception.ApiNotFoundException;

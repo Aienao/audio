@@ -1,7 +1,7 @@
 package com.ainoe.audio.util;
 
 import com.ainoe.audio.config.Config;
-import com.ainoe.audio.constvalue.AudioFormat;
+import com.ainoe.audio.constant.AudioFormat;
 import com.ainoe.audio.dto.AudioVo;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bytedeco.ffmpeg.avformat.AVFormatContext;

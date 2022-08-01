@@ -1,4 +1,4 @@
-package com.ainoe.audio.constvalue;
+package com.ainoe.audio.constant;
 
 public enum ApiParamType {
     INTEGER("int", "整型"),

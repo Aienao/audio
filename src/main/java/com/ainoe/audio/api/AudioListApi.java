@@ -2,24 +2,23 @@ package com.ainoe.audio.api;
 
 import com.ainoe.audio.config.Config;
 import com.ainoe.audio.dto.AudioVo;
+import com.ainoe.audio.exception.AudioReadNotFoundException;
+import com.ainoe.audio.exception.FileSuffixLostException;
+import com.ainoe.audio.reader.AudioReaderFactory;
+import com.ainoe.audio.reader.IAudioReader;
 import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.component.RestfulApiComponentBase;
-import com.ainoe.audio.util.AudioUtil;
 import com.alibaba.fastjson.JSONObject;
-import org.bytedeco.ffmpeg.avformat.AVFormatContext;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class AudioListApi extends RestfulApiComponentBase {
@@ -44,32 +43,21 @@ public class AudioListApi extends RestfulApiComponentBase {
         List<AudioVo> result = new ArrayList<>();
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
             @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                if (Files.isRegularFile(file)) {
-                    FFmpegFrameGrabber grabber = null;
-                    try (InputStream inputStream = Files.newInputStream(file);) {
-                        grabber = new FFmpegFrameGrabber(inputStream);
-                        grabber.start();
-                        AVFormatContext formatContext = grabber.getFormatContext();
-                        Map<String, String> metadata = grabber.getMetadata();
-                        result.add(new AudioVo(file.toFile().getName()
-                                , grabber.getFormat()
-                                , grabber.getSampleRate()
-                                , formatContext.bit_rate()
-                                , grabber.getAudioChannels()
-                                , AudioUtil.getDuration(formatContext.duration())
-                                , metadata.get("date")
-                                , metadata.get("artist")
-                                , metadata.get("album")
-                                , metadata.get("track")
-                                , metadata.get("title")
-                                , Files.size(file)));
+            public FileVisitResult visitFile(Path subPath, BasicFileAttributes attrs) throws IOException {
+                if (Files.isRegularFile(subPath)) {
+                    try {
+                        File file = subPath.toFile();
+                        if (!file.getName().contains(".")) {
+                            throw new FileSuffixLostException(file.getName());
+                        }
+                        String suffix = file.getName().substring(file.getName().lastIndexOf(".") + 1);
+                        IAudioReader handler = AudioReaderFactory.getHandler(suffix);
+                        if (handler == null) {
+                            throw new AudioReadNotFoundException(suffix);
+                        }
+                        result.add(handler.getAudioMetadata(file));
                     } catch (Exception ex) {
                         logger.error(ex.getMessage(), ex);
-                    } finally {
-                        if (grabber != null) {
-                            grabber.stop();
-                        }
                     }
                 }
                 return FileVisitResult.CONTINUE;

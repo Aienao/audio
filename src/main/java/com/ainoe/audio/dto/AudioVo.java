@@ -1,6 +1,6 @@
 package com.ainoe.audio.dto;
 
-import com.ainoe.audio.constvalue.ApiParamType;
+import com.ainoe.audio.constant.ApiParamType;
 import com.ainoe.audio.restful.annotation.EntityField;
 import org.apache.commons.lang3.StringUtils;
 
