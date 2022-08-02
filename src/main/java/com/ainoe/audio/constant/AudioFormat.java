@@ -3,7 +3,7 @@ package com.ainoe.audio.constant;
 public enum AudioFormat {
     FLAC("flac"),
     MP3("mp3"),
-    WAV("wav"),
+//    WAV("wav"),
 //    APE("ape"),
     ;
     private final String value;

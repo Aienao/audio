@@ -3,6 +3,10 @@ package com.ainoe.audio.util;
 import com.ainoe.audio.config.Config;
 import com.ainoe.audio.constant.AudioFormat;
 import com.ainoe.audio.dto.AudioVo;
+import com.ainoe.audio.exception.AudioReadNotFoundException;
+import com.ainoe.audio.exception.FileSuffixLostException;
+import com.ainoe.audio.reader.AudioReaderFactory;
+import com.ainoe.audio.reader.IAudioReader;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bytedeco.ffmpeg.avformat.AVFormatContext;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -11,6 +15,7 @@ import org.bytedeco.javacv.Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -21,6 +26,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -166,9 +172,28 @@ public class AudioUtil {
                 , metadata.get("date")
                 , metadata.get("artist")
                 , metadata.get("album")
-                , metadata.get("track")
                 , metadata.get("title")
                 , Files.size(file));
+    }
+
+    /**
+     * 使用jaudiotagger获取音频元数据
+     * 此方式可读取专辑封面，性能较好，缺点在于不同格式的音频，读取方式也不同，需要给每一种格式配备工厂
+     *
+     * @param file
+     * @return
+     * @throws Exception
+     */
+    public static AudioVo getAudioMetadataByReader(File file) throws Exception {
+        if (!file.getName().contains(".")) {
+            throw new FileSuffixLostException(file.getName());
+        }
+        String suffix = file.getName().substring(file.getName().lastIndexOf(".") + 1);
+        IAudioReader handler = AudioReaderFactory.getHandler(suffix.toLowerCase(Locale.ROOT));
+        if (handler == null) {
+            throw new AudioReadNotFoundException(suffix);
+        }
+        return handler.getAudioMetadata(file);
     }
 
     /**

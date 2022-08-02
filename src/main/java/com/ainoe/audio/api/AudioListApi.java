@@ -2,12 +2,9 @@ package com.ainoe.audio.api;
 
 import com.ainoe.audio.config.Config;
 import com.ainoe.audio.dto.AudioVo;
-import com.ainoe.audio.exception.AudioReadNotFoundException;
-import com.ainoe.audio.exception.FileSuffixLostException;
-import com.ainoe.audio.reader.AudioReaderFactory;
-import com.ainoe.audio.reader.IAudioReader;
 import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.component.RestfulApiComponentBase;
+import com.ainoe.audio.util.AudioUtil;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,16 +43,8 @@ public class AudioListApi extends RestfulApiComponentBase {
             public FileVisitResult visitFile(Path subPath, BasicFileAttributes attrs) throws IOException {
                 if (Files.isRegularFile(subPath)) {
                     try {
-                        File file = subPath.toFile();
-                        if (!file.getName().contains(".")) {
-                            throw new FileSuffixLostException(file.getName());
-                        }
-                        String suffix = file.getName().substring(file.getName().lastIndexOf(".") + 1);
-                        IAudioReader handler = AudioReaderFactory.getHandler(suffix);
-                        if (handler == null) {
-                            throw new AudioReadNotFoundException(suffix);
-                        }
-                        result.add(handler.getAudioMetadata(file));
+                        AudioVo audioVo = AudioUtil.getAudioMetadataByReader(subPath.toFile());
+                        result.add(audioVo);
                     } catch (Exception ex) {
                         logger.error(ex.getMessage(), ex);
                     }
