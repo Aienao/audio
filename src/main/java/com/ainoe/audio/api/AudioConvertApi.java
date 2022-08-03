@@ -4,13 +4,14 @@ import com.ainoe.audio.config.Config;
 import com.ainoe.audio.constant.ApiParamType;
 import com.ainoe.audio.constant.AudioFormat;
 import com.ainoe.audio.exception.FileSuffixLostException;
+import com.ainoe.audio.multithread.batch.BatchRunner;
 import com.ainoe.audio.restful.annotation.Description;
 import com.ainoe.audio.restful.annotation.Input;
 import com.ainoe.audio.restful.annotation.Param;
 import com.ainoe.audio.restful.component.RestfulBinaryStreamApiComponentBase;
 import com.ainoe.audio.util.AudioUtil;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.InputStream;
-import java.util.Map;
+import java.util.List;
 
 @Component
 public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
@@ -65,18 +66,24 @@ public class AudioConvertApi extends RestfulBinaryStreamApiComponentBase {
             }
         }
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-        if (MapUtils.isNotEmpty(fileMap)) {
-            // todo 支持多个文件
-            MultipartFile multipartFile = fileMap.entrySet().stream().findFirst().get().getValue();
-            InputStream inputStream = multipartFile.getInputStream();
-            String filename = multipartFile.getOriginalFilename();
-            if (!filename.contains(".")) {
-                throw new FileSuffixLostException(filename);
-            }
-            logger.debug("converting {}.", filename);
-            String outputFileName = filename.substring(0, filename.lastIndexOf(".") + 1) + audioFormat.getValue();
-            AudioUtil.convert(inputStream, Config.AUDIO_HOME() + File.separator + uuid + File.separator + outputFileName, audioFormat, bitRate);
+        List<MultipartFile> fileList = multipartRequest.getFiles("fileList");
+        if (CollectionUtils.isNotEmpty(fileList)) {
+            BatchRunner<MultipartFile> runner = new BatchRunner<>();
+            AudioFormat finalAudioFormat = audioFormat;
+            Integer finalBitRate = bitRate;
+            runner.execute(fileList, 5, item -> {
+                String filename = item.getOriginalFilename();
+                if (!filename.contains(".")) {
+                    throw new FileSuffixLostException(filename);
+                }
+                try (InputStream inputStream = item.getInputStream()) {
+                    String outputFileName = filename.substring(0, filename.lastIndexOf(".") + 1) + finalAudioFormat.getValue();
+                    AudioUtil.convert(inputStream, Config.AUDIO_HOME() + File.separator + uuid + File.separator + outputFileName, finalAudioFormat, finalBitRate);
+                } catch (Exception ex) {
+                    logger.error("{} convert failed.", filename);
+                    logger.error(ex.getMessage(), ex);
+                }
+            });
         }
         return null;
     }
