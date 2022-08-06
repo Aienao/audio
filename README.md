@@ -32,7 +32,7 @@
 
 ### 安装FFmpeg
 
-本项目依赖FFmpeg，故需要先行安装FFmpeg，安装请参考官方指南
+本项目依赖FFmpeg，故需要先行安装FFmpeg，安装请参考[官方指南](https://github.com/FFmpeg/FFmpeg)
 
 ### 启动项目
 
