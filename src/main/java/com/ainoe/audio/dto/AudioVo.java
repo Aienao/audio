@@ -4,6 +4,8 @@ import com.ainoe.audio.constant.ApiParamType;
 import com.ainoe.audio.restful.annotation.EntityField;
 
 public class AudioVo {
+    @EntityField(name = "文件名称", type = ApiParamType.STRING)
+    private String fileName;
     @EntityField(name = "名称", type = ApiParamType.STRING)
     private String name;
     @EntityField(name = "格式", type = ApiParamType.STRING)
@@ -32,8 +34,8 @@ public class AudioVo {
     public AudioVo() {
     }
 
-    public AudioVo(String name, String format, Integer sampleRate, Long bitRate, Integer channels, String duration, String date, String artist, String album, String title, Long size, String cover) {
-        this.name = name;
+    public AudioVo(String fileName, String format, Integer sampleRate, Long bitRate, Integer channels, String duration, String date, String artist, String album, String title, Long size, String cover) {
+        this.fileName = fileName;
         this.format = format;
         this.sampleRate = sampleRate;
         this.bitRate = bitRate;
@@ -47,8 +49,8 @@ public class AudioVo {
         this.cover = cover;
     }
 
-    public AudioVo(String name, String format, Integer sampleRate, Long bitRate, Integer channels, String duration, String date, String artist, String album, String title, Long size) {
-        this.name = name;
+    public AudioVo(String fileName, String format, Integer sampleRate, Long bitRate, Integer channels, String duration, String date, String artist, String album, String title, Long size) {
+        this.fileName = fileName;
         this.format = format;
         this.sampleRate = sampleRate;
         this.bitRate = bitRate;
@@ -73,7 +75,16 @@ public class AudioVo {
         this.cover = cover;
     }
 
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
     public String getName() {
+        name = title;
         return name;
     }
 

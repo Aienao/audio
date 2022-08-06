@@ -33,7 +33,7 @@ public class AudioDownloadApi extends RestfulBinaryStreamApiComponentBase {
 
     @Override
     public String getToken() {
-        return "/audio/download";
+        return "/audio/download/{name}";
     }
 
     @Override
