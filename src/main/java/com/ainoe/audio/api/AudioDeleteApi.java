@@ -9,8 +9,6 @@ import com.ainoe.audio.restful.component.RestfulApiComponentBase;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -23,8 +21,6 @@ import java.util.Objects;
 
 @Component
 public class AudioDeleteApi extends RestfulApiComponentBase {
-
-    static Logger logger = LoggerFactory.getLogger(AudioDeleteApi.class);
 
     @Override
     public String getToken() {
